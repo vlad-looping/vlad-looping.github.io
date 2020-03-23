@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+
+
+@font-face {
+  font-family: Posterama;
+  src: url('Monotype  - Posterama Text.otf');
+}
+
+
+#box1 {
+  width: 960px;
+  margin-left: 40px;
+}
+
+
+</style>
+
+<body>
+  <div id = "box1">
+  </div>
+</body>
+
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+
+
+var element_width = d3.select('#box1').node().getBoundingClientRect().width
+
+height = 500;
+width = element_width;
+margin = ({top: 20, right: 0, bottom: 50, left: 0});
+
+
+data_first = [{year: 2019, value: 106},
+             {year: 2020, value: 127},
+             {year: 2021, value: 147}]
+
+
+x = d3.scaleBand()
+                 .domain(d3.range(data_first.length))
+                 .range([margin.left, width - margin.right])
+                 .padding(0.1)
+
+y = d3.scaleLinear()
+                     .domain([0, d3.max(data_first, d => d.value)]).nice()
+                     .range([height - margin.bottom, margin.top])
+
+
+
+
+var svg = d3.select('#box1').append("svg")
+    .attr("width", width)
+    .attr("height", height)
+
+  svg.append("g")
+      .attr("fill", " #81131f")
+    .selectAll("rect")
+    .data(data_first)
+    .join("rect")
+      .attr("x", (d, i) => x(i))
+      .attr("y", d => y(0))
+      .attr("height", 0)
+      .attr("width", x.bandwidth());
+
+
+  svg.selectAll("rect")
+    .transition()
+    .duration(2000)
+    .ease(d3.easeCubicOut)
+    .attr("y", function(d) { return y(d.value); })
+    .attr("height", function(d) { return y(0) - y(d.value); })
+    .delay(function(d,i){console.log(i) ; return(i*100)})
+
+
+  svg.selectAll("years")
+      .data(data_first)
+      .enter()
+      .append("text")
+      .attr("x", function(d, i) { return (x(i) + x.bandwidth()/2 - 30);})
+      .attr("y", function(d) { return height - 10; })
+      .text(function(d) { return d.year; })
+      .style('font-family', 'Posterama')
+      .style('font-size' , 32)
+
+    svg.selectAll("labels")
+      .data(data_first)
+      .enter()
+      .append("text")
+      .attr("x", function(d, i) { return (x(i) + x.bandwidth()/2 - 50);})
+      .attr("y", function(d) { return y(d.value) + 50; })
+      .text(function(d) { return d.value; })
+      .style('font-family', 'Posterama')
+      .style('fill', 'white')
+      .style('font-size' , 60)
+
+
+
+
+
+
+</script>
